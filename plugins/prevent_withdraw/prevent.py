@@ -17,5 +17,5 @@ class Setup:
     @on_event("withdraw", lambda event: hasattr(event, "notice_type") and event.notice_type == "group_recall" and event.operator_id == event.user_id)
     async def recall(event):
         record = json.load(open("record.json", "r"))
-        if event.message_id in record:
-            send_message("group", event.group_id, record[event.message_id])
+        if str(event.message_id) in record:
+           await send_message("group", event.group_id, record[str(event.message_id)])
