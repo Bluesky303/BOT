@@ -15,6 +15,8 @@ class Setup:
     @on_event("message", lambda event: hasattr(event, "content") and event.content == "bye"):
         def bye(self, event):
             print("Bye, world!")
+            
+当插件为包时需要有__init__.py文件，文件中导入所有插件类
 '''
 
 # 管理器类
@@ -27,11 +29,15 @@ class PluginManager:
     def load_plugins(self, plugin_name: str):
         try:
             print(f"Loading plugin {plugin_name}")
+            # 导入插件
             module = import_module(f"plugins.{plugin_name}")
+            # 检查是否有插件类
             has_cls = False
+            # 遍历所有插件类
             for attr in dir(module):
                 cls = getattr(module, attr)
                 if hasattr(cls, "_is_plugin") and cls._is_plugin:
+                    # 注册所有监听器
                     self._register_handlers(cls)
                     self.plugins[plugin_name] = cls
                     has_cls = True
@@ -43,6 +49,7 @@ class PluginManager:
             print(f"Error loading plugin {plugin_name}: {e}")
             
     def _register_handlers(self, cls):
+        # 遍历所有监听器
         for attr in dir(cls):
             method = getattr(cls, attr)
             if hasattr(method, "_config"):
@@ -56,8 +63,12 @@ class PluginManager:
         
     def load_all_plugins(self):
         for plugin in self.plugins_path.iterdir():
-            if not plugin.name.startswith("_") and plugin.suffix == ".py":
-                self.load_plugins(plugin.name[:-3])
+            if plugin.name.startswith(("_", ".")): # 特殊文件忽略
+                continue
+            if plugin.is_dir() and (plugin / "__init__.py").exists(): # 包
+                self.load_plugins(plugin.name)
+            if plugin.suffix == ".py": # 单文件
+                self.load_plugins(plugin.stem)
 
 # 装饰器
 def plugin_setup():
