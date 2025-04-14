@@ -1,5 +1,5 @@
 import requests
-from api_key import API_KEY
+from .api_key import API_KEY
 
 def get_balance():
     url = "https://api.deepseek.com/user/balance"

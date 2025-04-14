@@ -2,7 +2,7 @@ from bot_core import plugin_setup, on_event
 from bot_core import create_text
 from bot_core import send_message
 
-from deepseek import balance_num
+from .deepseek import balance_num
 
 @plugin_setup()
 class DeepSeekChat:
