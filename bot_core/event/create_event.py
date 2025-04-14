@@ -1,5 +1,6 @@
 from .event import Event
 from .message_event import MessageEvent, PrivateMessageEvent, GroupMessageEvent
+from .notice_event import GroupMessageWithDraw
 
 diction = { # post_type层
     'message': {
@@ -8,7 +9,8 @@ diction = { # post_type层
         'group': GroupMessageEvent
     },
     'notice': {
-        
+        'attr': 'notice_type',
+        'group_recall': GroupMessageWithDraw
     },
     'request': {
     
