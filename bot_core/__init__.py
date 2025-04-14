@@ -1,4 +1,4 @@
-from .event import Event, MessageEvent, create_event
+from .event import Event, create_event
 from .listener import EventListener
 from .plugin import PluginManager
 from .message import *
