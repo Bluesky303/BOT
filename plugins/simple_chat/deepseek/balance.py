@@ -1,5 +1,5 @@
 import requests
-from .api_key import API_KEY
+from api_key import API_KEY
 
 def get_balance():
     url = "https://api.deepseek.com/user/balance"
@@ -11,7 +11,7 @@ def get_balance():
     }
 
     response = requests.request("GET", url, headers=headers, data=payload)
-    return response
+    return response.json()
     
 def is_available():
     re = get_balance()
@@ -20,4 +20,3 @@ def is_available():
 def balance_num():
     re = get_balance()
     return re['balance_infos'][0]["total_balance"]
-
