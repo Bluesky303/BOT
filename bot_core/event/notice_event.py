@@ -13,5 +13,5 @@ class GroupMessageWithDraw(NoticeEvent):
     
     group_id: int = 0
     user_id: int = 0
-    operater_id: int = 0
+    operator_id: int = 0
     message_id: int = 0
