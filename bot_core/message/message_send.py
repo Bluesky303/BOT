@@ -12,13 +12,17 @@ async def send_message(message_type: str, id: int, message: list):
     return message_id
     '''
     async with aiohttp.ClientSession() as session:
+        
+        if type(message[0]) == Message:
+            message = [asdict(m) for m in message]
+        
         message_id = await session.post(
             'http://localhost:3000/send_msg', 
             json={
                 'type': message_type,
                 'user_id': id, 
                 'group_id': id,
-                'message': [asdict(m) for m in message]
+                'message': message
             })
         return message_id
 
