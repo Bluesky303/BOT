@@ -1,3 +1,5 @@
 from .chat import setup
 
-__all__ = ["setup"]
+from .deepseekchat import DeepSeekChat
+
+__all__ = ['setup', 'DeepSeekChat']

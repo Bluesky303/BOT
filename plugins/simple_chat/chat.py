@@ -5,7 +5,6 @@ from bot_core import send_message
 from pathlib import Path
 import json
 
-
 path = Path(__file__).parent / "config.json"
 if not path.exists():
     json.dump({'time': 0}, open(path, "w"))
@@ -31,7 +30,5 @@ class setup:
                     'file_size': '40294'}
                 }]
         }
-        print(d[emotion])
         json.dump({'time': event.time}, open(path, "w"))
         await send_message('group', event.group_id, d[emotion])
-        

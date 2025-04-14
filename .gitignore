@@ -9,6 +9,7 @@ myenv/
 # config files
 config.json
 record.json
+apikey.json
 
 # test files
 test.py
