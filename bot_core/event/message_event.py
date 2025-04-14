@@ -13,9 +13,12 @@ class MessageEvent(Event):
     sender: dict = field(default_factory={})
     
     message_id: int = 0
+    message_seq: int = 0
+    
     message: list[Message] = field(default_factory=list)
     raw_message: str = ''
     
+    message_format: str = 'array' # 'array' or 'string'
     font: int = 0 # 字体
 
 @dataclass
@@ -30,8 +33,7 @@ class PrivateMessageEvent(MessageEvent):
         'group_id': 0 # has value if sub_type is 'group'
     })
     
-    message_format: str = 'array' # 'array' or 'string'
-    temp_source: int = 0 # 不知道
+    temp_source: int = 0 # 临时会话来源
     
     def is_private(self):
         return True
@@ -48,3 +50,4 @@ class GroupMessageEvent(MessageEvent):
         'role': '', # member, admin, owner
         'title': '' # 群头衔
     })
+    group_id: int = 0

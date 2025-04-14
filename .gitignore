@@ -8,3 +8,8 @@ myenv/
 
 # config files
 config.json
+record.json
+
+# test files
+test.py
+test.json

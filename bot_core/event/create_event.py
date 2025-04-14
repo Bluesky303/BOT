@@ -19,5 +19,8 @@ diction = { # post_type层
 }
 
 def create_event(data: dict):
-    msg = diction[data['post_type']][diction[data['post_type']]['attr']](**data)
-    
+    layer1 = data['post_type']
+    layer1_attr = diction[layer1]['attr']
+    layer2 = data[layer1_attr]
+    msg = diction[layer1][layer2](**data)
+    return msg
