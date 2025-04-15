@@ -1,7 +1,7 @@
 from openai import OpenAI
 from pathlib import Path
 import json
-import asyncio
+import traceback
 
 path = Path(__file__).parent / "apikey.json"
 api_key = json.load(open(path))['key']
@@ -18,8 +18,8 @@ async def group_chat(group_id, message, name, time):
     try:
         print('start get')
         response = client.chat.completions.create(model = "deepseek-chat", messages = messages)
-        re = response.choices[0].message
-        print(dict(re))
+        re = dict(response.choices[0].message)
+        print(re)
         messages.append(re)
         messages_info[group_id] = messages
         json.dump(messages_info, open(path.parent / "messages.json", "w"), ensure_ascii=False)
@@ -28,4 +28,4 @@ async def group_chat(group_id, message, name, time):
         if r['state'] == '发送':
             return r["message"]
     except Exception as e:
-        print(e)
+        traceback.print_exc()
