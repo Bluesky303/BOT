@@ -56,6 +56,8 @@ class setup:
               config['state'] == 'deepseek' and 
               not event.raw_message.split()[0] == "/deepseek")
     async def on_talk(event):
+        print(event.raw_message)
         reply = await group_chat(event.group_id, event.message, event.sender['card'], event.time)
+        print(reply)
         if reply:
             await send_message('group', event.group_id, reply)

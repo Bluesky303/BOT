@@ -16,6 +16,7 @@ async def group_chat(group_id, message, name, time):
         messages_info[group_id].append({"role": "user", "content": f"'名称': {name}, '时间': {time}, '内容': {message}"})
     messages = messages_info[group_id]
     try:
+        print('start get')
         response = await client.chat.completions.create(model = "deepseek-chat", messages = messages)
         re = response.choices[0].message
         print(re)
