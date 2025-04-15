@@ -25,7 +25,8 @@ async def group_chat(group_id, message, name, time):
         json.dump(messages_info, open(path.parent / "messages.json", "w"), ensure_ascii=False)
         r = re.content
         r = json.loads(r)
+        print(r)
         if r['state'] == '发送':
-            return r['message']
+            return r["message"]
     except Exception as e:
         print(e)

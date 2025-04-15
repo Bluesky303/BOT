@@ -16,6 +16,7 @@ config = json.load(open(path))
 class setup:
     @on_event("call", lambda event: event.raw_message == "心镜" and config['state'] == None)
     async def on_call(event):
+        global config
         config = json.load(open(path))
         last_time = config['time']
         time = event.time - last_time
@@ -40,6 +41,7 @@ class setup:
         
     @on_event("state_change", lambda event: event.raw_message.split()[0] == "/deepseek" and event.user_id == config['master'])
     async def on_state_change(event):
+        global config
         config = json.load(open(path))
         if event.raw_message.split()[1] == 'on':
             config['state'] = 'deepseek'
