@@ -2,18 +2,22 @@ from bot_core import plugin_setup, on_event
 from bot_core import create_text
 from bot_core import send_message
 
+from .deepseek import group_chat
 from pathlib import Path
 import json
 
 path = Path(__file__).parent / "config.json"
 if not path.exists():
-    json.dump({'time': 0}, open(path, "w"))
+    json.dump({'time': 0, 'state': None, 'master': None}, open(path, "w"))
+
+config = json.load(open(path))
 
 @plugin_setup()
 class setup:
-    @on_event("call", lambda event: event.raw_message == "心镜")
+    @on_event("call", lambda event: event.raw_message == "心镜" and config['state'] == None)
     async def on_call(event):
-        last_time = json.load(open(path))['time']
+        config = json.load(open(path))
+        last_time = config['time']
         time = event.time - last_time
         l = [time] + [600, 60, 10]
         l = sorted(l)
@@ -30,5 +34,24 @@ class setup:
                     'file_size': '40294'}
                 }]
         }
-        json.dump({'time': event.time}, open(path, "w"))
+        config['time'] = event.time
+        json.dump(config, open(path, "w"))
         await send_message('group', event.group_id, d[emotion])
+        
+    @on_event("state_change", lambda event: event.raw_message == "/deepseek" and event.user_id == config['master'])
+    async def on_state_change(event):
+        config = json.load(open(path))
+        if event.raw_message.split()[1] == 'on':
+            config['state'] = 'deepseek'
+        if event.raw_message.split()[1] == 'off':
+            config['state'] = None
+        json.dump(config, open(path, "w"))
+            
+    @on_event("talk", 
+              lambda event: hasattr(event, "message_type") and 
+              event.message_type == "group" and
+              config['state'] == 'deepseek')
+    async def on_talk(event):
+        reply = group_chat(event.group_id, event.message, event.sender['card'], event.time)
+        if reply:
+            await send_message('group', event.group_id, reply)
