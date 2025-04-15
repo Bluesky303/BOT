@@ -38,20 +38,23 @@ class setup:
         json.dump(config, open(path, "w"))
         await send_message('group', event.group_id, d[emotion])
         
-    @on_event("state_change", lambda event: event.raw_message == "/deepseek" and event.user_id == config['master'])
+    @on_event("state_change", lambda event: event.raw_message.split()[0] == "/deepseek" and event.user_id == config['master'])
     async def on_state_change(event):
         config = json.load(open(path))
         if event.raw_message.split()[1] == 'on':
             config['state'] = 'deepseek'
+            await send_message('group', event.group_id, [create_text("开启ds")])
         if event.raw_message.split()[1] == 'off':
             config['state'] = None
+            await send_message('group', event.group_id, [create_text("关闭ds")])
         json.dump(config, open(path, "w"))
             
     @on_event("talk", 
               lambda event: hasattr(event, "message_type") and 
               event.message_type == "group" and
-              config['state'] == 'deepseek')
+              config['state'] == 'deepseek' and 
+              not event.raw_message.split()[0] == "/deepseek")
     async def on_talk(event):
-        reply = group_chat(event.group_id, event.message, event.sender['card'], event.time)
+        reply = await group_chat(event.group_id, event.message, event.sender['card'], event.time)
         if reply:
             await send_message('group', event.group_id, reply)
