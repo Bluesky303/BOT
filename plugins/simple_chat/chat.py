@@ -8,7 +8,7 @@ import json
 
 path = Path(__file__).parent / "config.json"
 if not path.exists():
-    json.dump({'time': 0, 'state': None, 'master': None}, open(path, "w"))
+    json.dump({'time': 0, 'state': None, 'master': None, 'group_id': []}, open(path, "w"))
 
 config = json.load(open(path))
 
@@ -52,6 +52,7 @@ class setup:
     @on_event("talk", 
               lambda event: hasattr(event, "message_type") and 
               event.message_type == "group" and
+              event.group_id in config['group_id'] and
               config['state'] == 'deepseek' and 
               not event.raw_message.split()[0] == "/deepseek")
     async def on_talk(event):
