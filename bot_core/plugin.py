@@ -72,10 +72,12 @@ class PluginManager:
                 self.load_plugins(plugin.stem)
 
 # 装饰器
-def plugin_setup(cls):
-    # 添加装饰标记
-    cls._is_plugin = True
-    return cls
+def plugin_setup():
+    def decorator(cls):
+        # 添加装饰标记
+        cls._is_plugin = True
+        return cls
+    return decorator
 
 def on_event(name: str, condition: Callable):
     def decorator(method):
