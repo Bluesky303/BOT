@@ -15,7 +15,6 @@ class EventListener:
     def register_handler(self, name: str, condition: Condition, handler: Handler):
         self._handlers.append((name, condition, handler))
 
-        
     def unregister_handler(self, name: str):
         for i, (name, condition, handler) in enumerate(self._handlers):
             if name == name:

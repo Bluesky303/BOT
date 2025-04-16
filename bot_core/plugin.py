@@ -1,20 +1,21 @@
 from importlib import import_module
 from typing import Dict, Any, Callable
 from pathlib import Path
+from functools import wraps
 
 from bot_core.listener import EventListener
 
 '''
 插件示例：
-@plugin_setup(listener)
+@plugin_setup()
 class Setup:
-    @on_event("message", lambda event: hasattr(event, "content") and event.content == "hello"):
-        def hello(self, event):
-            print("Hello, world!")
+    @on_event("message", lambda event: hasattr(event, "content") and event.content == "hello")
+    def hello(self, event):
+        print("Hello, world!")
 
-    @on_event("message", lambda event: hasattr(event, "content") and event.content == "bye"):
-        def bye(self, event):
-            print("Bye, world!")
+    @on_event("message", lambda event: hasattr(event, "content") and event.content == "bye")
+    def bye(self, event):
+        print("Bye, world!")
             
 当插件为包时需要有__init__.py文件，文件中导入所有插件类
 '''
@@ -71,12 +72,10 @@ class PluginManager:
                 self.load_plugins(plugin.stem)
 
 # 装饰器
-def plugin_setup():
-    def decorator(cls):
-        # 添加装饰标记
-        cls._is_plugin = True
-        return cls
-    return decorator
+def plugin_setup(cls):
+    # 添加装饰标记
+    cls._is_plugin = True
+    return cls
 
 def on_event(name: str, condition: Callable):
     def decorator(method):
