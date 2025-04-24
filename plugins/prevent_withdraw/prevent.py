@@ -14,7 +14,7 @@ class Setup:
     @on_event("message", lambda event: hasattr(event, "message_type") and event.message_type == "group" and event.user_id == config["id"])
     async def record_message(event):
         record = json.load(open(path / "record.json", "r"))
-        record[event.message_id] = [event.message, event.time]
+        record[event.message_id] = [event.raw_message, event.time]
         if len(record) > 100:
             timesort = sorted(record.items(), key=lambda x: x[1][1])
             record = dict(timesort[-50:])
