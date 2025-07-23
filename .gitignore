@@ -4,7 +4,10 @@ __pycache__/
 *$py.class
 
 # venv
-myenv/
+.venv/
+.python-version
+uv.lock
+.vs/
 
 # config files
 config.json
