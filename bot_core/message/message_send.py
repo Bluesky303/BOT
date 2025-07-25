@@ -2,6 +2,7 @@ import aiohttp
 from dataclasses import asdict
 
 from .message_class import Message
+from .config_load import HTTP_PORT
 
 async def send_message(message_type: str, id: int, message: list):
     '''
@@ -17,7 +18,7 @@ async def send_message(message_type: str, id: int, message: list):
             message = [asdict(m) for m in message]
         
         message_id = await session.post(
-            'http://localhost:3000/send_msg', 
+            f'http://localhost:{HTTP_PORT}/send_msg', 
             json={
                 'type': message_type,
                 'user_id': id, 
@@ -34,7 +35,7 @@ async def send_group_file(group_id: int, file: str, name: str):
     '''
     async with aiohttp.ClientSession() as session:
         await session.post(
-            'http://localhost:3000/upload_group_file', 
+            f'http://localhost:{HTTP_PORT}/upload_group_file', 
             json={
                 'group_id': group_id,
                 'file': file,

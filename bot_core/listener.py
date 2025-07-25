@@ -22,33 +22,30 @@ class EventListener:
 
     def unregister_handler(self, name: str):
         self._handlers = [
-            (name, condition, handler) for name, condition, handler in self._handlers
-            if name != name
+            (n, c, h) for n, c, h in self._handlers
+            if n != name
         ]
 
+    async def put_event(self, event: Event):
+        await self._events.put(event)
+    
     async def _safe_handler(self, handler: Handler, event: Event, name: str):
-        """带错误保护的处理器包装"""
         try:
-            async with self._semaphore:
+            async with self._semaphore: 
                 await handler(event)
         except Exception as e:
             traceback.print_exc()
             print(f"Error in handler '{name}': {e}\nEvent: {event}")
-        finally:
-            self._pending_tasks.discard(asyncio.current_task())
     
     async def _process_event(self, event: Event):
-        """并发执行匹配的处理器"""
         matched = False
         for name, condition, handler in self._handlers:
             if condition(event):
                 matched = True
                 # 为每个处理器创建独立任务
-                task = asyncio.create_task(
-                    self._safe_handler(handler, event, name))
+                task = asyncio.create_task(self._safe_handler(handler, event, name))
                 self._pending_tasks.add(task)
-                task.add_done_callback(
-                    lambda t: self._pending_tasks.discard(t))
+                task.add_done_callback(lambda t: self._pending_tasks.discard(t))
         
         if not matched:
             print(f"No handler matched for event: {event}")
@@ -65,7 +62,6 @@ class EventListener:
             self._events.task_done()
     
     async def stop(self):
-        """优雅停止监听器"""
         self._running = False
         # 等待队列处理完成
         await self._events.join()
