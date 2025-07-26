@@ -15,7 +15,7 @@ record.json
 apikey.json
 
 # test files
-test.py
-test.json
-test2.json
-test.txt
+test*
+
+# vscode
+.vscode/

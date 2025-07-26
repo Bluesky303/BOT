@@ -1,6 +1,7 @@
 from bot_core import plugin_setup, on_event
 from bot_core import create_text
 from bot_core import send_message
+from bot_core import BaseEvent, GroupMessageEvent
 
 from .deepseek import group_chat
 from pathlib import Path
@@ -15,7 +16,7 @@ config = json.load(open(path))
 @plugin_setup()
 class setup:
     @on_event("call", lambda event: event.raw_message == "心镜" and config['state'] == None)
-    async def on_call(event):
+    async def on_call(self, event: GroupMessageEvent):
         global config
         config = json.load(open(path))
         last_time = config['time']
@@ -40,7 +41,7 @@ class setup:
         await send_message('group', event.group_id, d[emotion])
         
     @on_event("state_change", lambda event: event.raw_message.split()[0] == "/deepseek" and event.user_id == config['master'])
-    async def on_state_change(event):
+    async def on_state_change(self, event: GroupMessageEvent):
         global config
         config = json.load(open(path))
         if event.raw_message.split()[1] == 'on':
@@ -57,7 +58,7 @@ class setup:
               event.group_id in config['group_id'] and
               config['state'] == 'deepseek' and 
               not event.raw_message.split()[0] == "/deepseek")
-    async def on_talk(event):
+    async def on_talk(self, event: GroupMessageEvent):
         print(event.raw_message)
         reply = await group_chat(event.group_id, event.message, event.sender['card'], event.time)
         print(reply)

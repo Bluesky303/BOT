@@ -1,13 +1,12 @@
-from .event import Event
+from .event import BaseEvent
 
-from typing import Callable
 import asyncio
 import traceback
 
-from typing import List, Tuple
+from typing import List, Tuple, Callable, Awaitable
 
-Condition = Callable[[Event], bool]
-Handler = Callable[[Event], None]
+Condition = Callable[[BaseEvent], bool]
+Handler = Callable[[BaseEvent], Awaitable[None]]
 
 class EventListener:
     def __init__(self, max_concurrent: int = 10):
@@ -26,10 +25,10 @@ class EventListener:
             if n != name
         ]
 
-    async def put_event(self, event: Event):
+    async def put_event(self, event: BaseEvent):
         await self._events.put(event)
     
-    async def _safe_handler(self, handler: Handler, event: Event, name: str):
+    async def _safe_handler(self, handler: Handler, event: BaseEvent, name: str):
         try:
             async with self._semaphore: 
                 await handler(event)
@@ -37,7 +36,7 @@ class EventListener:
             traceback.print_exc()
             print(f"Error in handler '{name}': {e}\nEvent: {event}")
     
-    async def _process_event(self, event: Event):
+    async def _process_event(self, event: BaseEvent):
         matched = False
         for name, condition, handler in self._handlers:
             if condition(event):
@@ -51,8 +50,7 @@ class EventListener:
             print(f"No handler matched for event: {event}")
                 
     async def run(self):
-        if self._running:
-            raise RuntimeError("Listener is already running")
+        if self._running: raise RuntimeError("Listener is already running")
         
         self._running = True
         while self._running:

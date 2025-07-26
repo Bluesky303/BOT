@@ -8,12 +8,11 @@ from bot_core import EventListener, PluginManager, create_event
 
 config = yaml.safe_load(open("config.yaml"))
 
-Listener = None
+Listener = EventListener()
 
 @asynccontextmanager
 async def listener_setup(app: FastAPI):
     global Listener
-    Listener = EventListener() # 队列需要在循环内初始化
     manager = PluginManager(Listener) # 插件加载要在循环内
     manager.load_all_plugins()
     listener_task = asyncio.create_task(Listener.run())

@@ -1,28 +1,19 @@
-from .event import Event
-from .message_event import MessageEvent, PrivateMessageEvent, GroupMessageEvent
-from .notice_event import GroupMessageWithDraw
+from .event import BaseEvent
+from .message_event import *
+from .notice_event import *
 
-diction = { # post_type层
-    'message': {
-        'attr': 'message_type', # 标记本层的属性
-        'private': PrivateMessageEvent,
-        'group': GroupMessageEvent
-    },
-    'notice': {
-        'attr': 'notice_type',
-        'group_recall': GroupMessageWithDraw
-    },
-    'request': {
-    
-    },
-    'meta_event': {
-    
-    },
-}
+ParentEvents = BaseEvent.__subclasses__()
 
-def create_event(data: dict):
-    layer1 = data['post_type']
-    layer1_attr = diction[layer1]['attr']
-    layer2 = data[layer1_attr]
-    msg = diction[layer1][layer2](**data)
-    return msg
+def create_event(data: dict) -> BaseEvent:
+    message_type = data.get('post_type', '')
+    for ParentEvent in ParentEvents:
+        if message_type == ParentEvent.post_type:
+            if ParentEvent._EVENT_ATTR in data:
+                attr = ParentEvent._EVENT_ATTR
+                for ChildEvent in ParentEvent.__subclasses__():
+                    if data[attr] == ChildEvent.__dict__[attr]:
+                        return ChildEvent(**data)
+            else:
+                return ParentEvent(**data)
+    else: 
+        return BaseEvent(**data)
