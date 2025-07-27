@@ -15,32 +15,7 @@ config = json.load(open(path))
 
 @plugin_setup()
 class setup:
-    @on_event("call", lambda event: event.raw_message == "心镜" and config['state'] == None)
-    async def on_call(self, event: GroupMessageEvent):
-        global config
-        config = json.load(open(path))
-        last_time = config['time']
-        time = event.time - last_time
-        l = [time] + [600, 60, 10]
-        l = sorted(l)
-        emotion = l[l.index(time) + 1] if time < 600 else 600
-        d = {
-            600: [create_text("我在")],
-            60: [create_text("有什么事？")],
-            10: [{
-                'type': 'image', 
-                'data': {
-                    'file': '236A65D82ECF95253480016C8A3ACE6C.jpg', 
-                    'subType': 1, 
-                    'url': 'https://multimedia.nt.qq.com.cn/download?appid=1407&fileid=EhRysvEy7yhzdjhMgeihQxuggcwyDhjmugIg_wooxP-V7djXjAMyBHByb2RQgL2jAVoQ8dtk_mEFgsQjknJPiQmvKnoC6G4&spec=0&rkey=CAQSKAB6JWENi5LMCpIiEJodguNuidpWWtzEoJu5SnZRhiiqmdeMOS5RfA8', 
-                    'file_size': '40294'}
-                }]
-        }
-        config['time'] = event.time
-        json.dump(config, open(path, "w"))
-        await send_message('group', event.group_id, d[emotion])
-        
-    @on_event("state_change", lambda event: event.raw_message.split()[0] == "/deepseek" and event.user_id == config['master'])
+    @on_event("state_change", lambda event: type(event) == GroupMessageEvent and event.raw_message.split()[0] == "/deepseek" and event.user_id == config['master'])
     async def on_state_change(self, event: GroupMessageEvent):
         global config
         config = json.load(open(path))

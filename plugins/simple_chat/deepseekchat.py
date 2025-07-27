@@ -7,7 +7,7 @@ from .deepseek import balance_num
 @plugin_setup()
 class DeepSeekChat:
     @on_event("balance_call", lambda event: hasattr(event, "raw_message") and event.raw_message == "/余额查询")
-    async def on_balance_call(event):
+    async def on_balance_call(self, event):
         if event.message_type == "group":
             await send_message("group", event.group_id, [create_text(f"余额是{balance_num()}元")])
         if event.message_type == "private":
