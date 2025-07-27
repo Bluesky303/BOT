@@ -12,7 +12,10 @@ if not config_path.exists():
 else:
     config = json.load(open(config_path, 'r'))
     for g in config["allow_group"]:
-        config[g] = {}
+        config[g] = {
+            'last_message': '',
+            'last_send': '', 
+            }
 
 
 @plugin_setup()
