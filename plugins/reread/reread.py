@@ -18,7 +18,7 @@ class setup:
     @on_event("on_message", lambda event: type(event) == GroupMessageEvent and event.group_id in config["allow_group"])
     async def check_message(self, event: GroupMessageEvent):
         group_id = event.group_id
-        if not config[group_id] or event.raw_message != config[group_id]:
+        if not config.get(group_id) or event.raw_message != config[group_id]:
             config[group_id] = event.raw_message
         else:
             await send_message('group', group_id, event.message)
