@@ -11,6 +11,8 @@ if not config_path.exists():
     config = {}
 else:
     config = json.load(open(config_path, 'r'))
+    for g in config["allow_group"]:
+        config[g] = {}
 
 
 @plugin_setup()
