@@ -1,5 +1,5 @@
 from bot_core.plugin import plugin_setup, on_event
-from bot_core.message import send_message
+from bot_core.message import send_message, set_group_ban
 
 from pathlib import Path
 import json
@@ -25,3 +25,4 @@ class Setup:
         record = json.load(open(path / "record.json", "r"))
         if str(event.message_id) in record:
            await send_message("group", event.group_id, record[str(event.message_id)][0])
+           await set_group_ban(event.group_id, event.user_id, 3600)
