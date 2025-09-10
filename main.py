@@ -2,15 +2,17 @@ import uvicorn
 from fastapi import FastAPI, Request
 from contextlib import asynccontextmanager
 import asyncio
+import yaml
 
 from bot_core import EventListener, PluginManager, create_event
 
-Listener = None
+config = yaml.safe_load(open("config.yaml"))
+
+Listener = EventListener()
 
 @asynccontextmanager
 async def listener_setup(app: FastAPI):
     global Listener
-    Listener = EventListener() # 队列需要在循环内初始化
     manager = PluginManager(Listener) # 插件加载要在循环内
     manager.load_all_plugins()
     listener_task = asyncio.create_task(Listener.run())
@@ -24,7 +26,7 @@ async def listener_setup(app: FastAPI):
 
 app = FastAPI(lifespan=listener_setup)
 
-@app.post("/onebot")
+@app.post("/")
 async def root(request: Request):
     data = await request.json()
     event = create_event(data)
@@ -32,4 +34,4 @@ async def root(request: Request):
     await Listener._events.join()
 
 if __name__ == "__main__":
-    uvicorn.run(app, port=8070)
+    uvicorn.run(app, host=config['POST_HOST'], port=config['POST_PORT'])

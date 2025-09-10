@@ -1,7 +1,7 @@
-import requests
+import aiohttp
 from .api_key import API_KEY
 
-def get_balance():
+async def get_balance():
     url = "https://api.deepseek.com/user/balance"
 
     payload={}
@@ -9,9 +9,9 @@ def get_balance():
         'Accept': 'application/json',
         'Authorization': f'Bearer {API_KEY}'
     }
-
-    response = requests.request("GET", url, headers=headers, data=payload)
-    return response.json()
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, headers=headers, data=payload) as response:
+            return await response.json()
     
 def is_available():
     re = get_balance()
